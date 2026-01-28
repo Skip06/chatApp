@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import {Server}from 'http'
 import http from 'http'
 import 'dotenv/config'
+import {MessageService} from '../services/msgService'
 
 const userConnection = new Map<string, any>(); // to store existing connection as kv 
 const server = http.createServer()
@@ -23,9 +24,15 @@ wss.on('connection', (ws,req) =>{
         console.log(`User with id ${userId} is connected and the total num of people connected is ${userConnection.size}`)
 
 
-        //incoming msg from the user
+        //incoming msg from the user to our server from browser client
         ws.on('message',(data)=>{ // this data comes as in binary convert to string then to json
            const msg =  JSON.parse(data.toString())
+
+            // will save this to db and shout to redis intercome 
+            const savedMsg = MessageService.handleNewMessage(`${userId}`,msg)
+            ws.send(JSON.stringify({type: 'sent'}))
+
+
             console.log(`msg from ${userId} `, msg)
         })
         ws.on('close', () => {
@@ -33,8 +40,8 @@ wss.on('connection', (ws,req) =>{
             console.log(`User ${userId} left`)
         })  
     }
-    catch(e){
-        ws.send(JSON.stringify({ error: "Invalid token" }));
+    catch(e:any){
+        ws.send(JSON.stringify({ error: e.message ||'failed msg' }));
         ws.close();
     }
 })
