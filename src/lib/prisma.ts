@@ -1,12 +1,18 @@
 import { PrismaClient } from "@prisma/client";
-
-// Prevent multiple instances of Prisma Client in development
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+// We keep it empty to use the standard engine
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
 
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    log: ["query"], // Shows SQL queries in your terminal for debugging
+    adapter,
+    log: ["query"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

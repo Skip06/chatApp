@@ -16,3 +16,5 @@ router.post('/create',authenticateToken, async(req: any, res)=>{
     })
     res.json(channel)
 })
+
+export default router

@@ -60,7 +60,8 @@ router.post('/login', async(req,res) => {
     }
     catch(e){
         res.status(400).json({
-            msg: 'login Failed'
+            msg: 'login Failed',
+            error: e
         })
     }
 })
