@@ -27,7 +27,7 @@ export class MessageService{
             }
         })
 
-        pubMessage(channelId,{payload: savedMsg}) //now just publishsing
+        pubMessage(channelId,savedMsg) //now just publishsing
         return savedMsg;
 
 

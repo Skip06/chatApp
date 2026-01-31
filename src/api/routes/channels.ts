@@ -17,4 +17,25 @@ router.post('/create',authenticateToken, async(req: any, res)=>{
     res.json(channel)
 })
 
+
+router.post("/join", async (req, res) => {
+  const {channelId, userId} = req.body; 
+
+  try{
+    const updatedChannel = await prisma.channel.update({
+      where: {id: channelId},
+      data: {
+        members: {
+          connect: {id: userId}, // This links the user to the channel in the DB
+        },
+      },
+    });
+
+    res.status(200).json({message: "Joined successfully", updatedChannel});
+  }
+    catch (error) {
+    res.status(500).json({error: "Could not join channel"});
+  }
+});
+
 export default router
