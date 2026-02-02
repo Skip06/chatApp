@@ -1,0 +1,31 @@
+services:
+  # Redis: The Intercom
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+ 
+  server-1:
+    build: .
+    environment:
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://redis:6379
+      - SVIX_AUTH_TOKEN=${SVIX_AUTH_TOKEN}
+    depends_on:
+      - redis
+
+  
+  server-2:
+    build: .
+    environment:
+      - PORT=3001
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://redis:6379
+      - SVIX_AUTH_TOKEN=${SVIX_AUTH_TOKEN}
+    depends_on:
+      - redis
+

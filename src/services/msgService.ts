@@ -1,6 +1,7 @@
 import {z} from 'zod'
 import prisma from '../lib/prisma'
 import {pubMessage} from '../socket/pubsub'
+import NotificationService from './notificationService'
 
 const msgSchema = z.object({
     content: z.string().min(3).max(100),
@@ -26,7 +27,7 @@ export class MessageService{
                 }
             }
         })
-
+        await NotificationService.sendNewMessageNotification(savedMsg.channelId, savedMsg);
         pubMessage(channelId,savedMsg) //now just publishsing
         return savedMsg;
 
